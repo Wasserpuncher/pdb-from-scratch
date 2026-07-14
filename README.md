@@ -12,21 +12,28 @@ the CPU over that one instruction, and plant `0xCC` again for next time.
 That's the entire trick, and this is it running:
 
 ```console
+$ gcc -g -no-pie -O0 -o loopcount examples/loopcount.c
 $ python -m pdbfs run ./loopcount add
-
+total = 10
 breakpoint on add at 0x400466
 
-running ./loopcount
+running ...
 
-  hit add (#1)  rdi=0x0 rsi=0x0
-  hit add (#2)  rdi=0x0 rsi=0x1
-  hit add (#3)  rdi=0x1 rsi=0x2
-  hit add (#4)  rdi=0x3 rsi=0x3
-  hit add (#5)  rdi=0x6 rsi=0x4
+  hit add (#1)  rdi=0x0 rsi=0x0 rdx=0x0
+  hit add (#2)  rdi=0x0 rsi=0x1 rdx=0x1
+  hit add (#3)  rdi=0x1 rsi=0x2 rdx=0x2
+  hit add (#4)  rdi=0x3 rsi=0x3 rdx=0x3
+  hit add (#5)  rdi=0x6 rsi=0x4 rdx=0x4
 
 program exited
   add: 5 hit(s)
 ```
+
+The `total = 10` on the first line is the *child* talking — its stdout is not
+separated from the debugger's, because a debugger that swallowed the program's
+output would be a strange debugger. And `-no-pie` is not decoration: with a
+position-independent executable the address is different on every run, and the
+`0x400466` above would be a lie the moment you tried it.
 
 The program calls `add(total, i)` in a five-iteration loop. The breakpoint fires
 five times — once per call — and each time we read the argument registers

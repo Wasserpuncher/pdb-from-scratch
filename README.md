@@ -147,6 +147,7 @@ while (hit := tracer.continue_past()) is not None:
 
 ## Install
 
+<!-- readme-check: skip=clones-this-repo-into-itself -->
 ```console
 $ git clone https://github.com/Wasserpuncher/pdb-from-scratch
 $ cd pdb-from-scratch

@@ -70,7 +70,7 @@ symbol table — parsed here by hand, and checked against `readelf`:
 
 ```console
 $ python -m pytest tests/test_elf.py -q
-7 passed
+6 passed
 ```
 
 For a position-independent executable the symbol value is only an *offset*; the

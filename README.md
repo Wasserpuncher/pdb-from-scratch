@@ -15,7 +15,7 @@ That's the entire trick, and this is it running:
 $ gcc -g -no-pie -O0 -o loopcount examples/loopcount.c
 $ python -m pdbfs run ./loopcount add
 total = 10
-breakpoint on add at 0x400466
+breakpoint on add at 0x...
 
 running ...
 
@@ -31,9 +31,19 @@ program exited
 
 The `total = 10` on the first line is the *child* talking — its stdout is not
 separated from the debugger's, because a debugger that swallowed the program's
-output would be a strange debugger. And `-no-pie` is not decoration: with a
-position-independent executable the address is different on every run, and the
-`0x400466` above would be a lie the moment you tried it.
+output would be a strange debugger.
+
+The address is written `0x...` above, and that is not laziness — it is the
+correction of a mistake this README made. It used to print a specific address,
+`0x400466`, alongside a confident paragraph explaining that `-no-pie` is what
+makes the address stable. `-no-pie` does make it stable *across runs*: without
+it, ASLR moves the program on every launch and no breakpoint address could be
+written down at all. But it does **not** make the address the same on your
+machine as on mine. The linker decides the layout, and a different binutils
+lays the same source out differently — on this laptop `add` lands at
+`0x400466`, on GitHub's runner at `0x401136`. The old paragraph warned about
+exactly the lie it was telling. The CI check that runs this block is what
+caught it.
 
 The program calls `add(total, i)` in a five-iteration loop. The breakpoint fires
 five times — once per call — and each time we read the argument registers

@@ -7,3 +7,4 @@ build/
 examples/loopcount
 examples/loopcount_pie
 *.o
+loopcount
